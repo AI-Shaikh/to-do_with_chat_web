@@ -12,7 +12,8 @@ lerna-debug.log*
 .env.local
 .env.development
 .env.test
-
+# Add specific sensitive variables (optional)
+VITE_STRIPE_PUBLIC_KEY=pk_test_*
 
 node_modules
 dist
