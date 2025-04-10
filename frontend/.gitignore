@@ -11,9 +11,9 @@ lerna-debug.log*
 .env
 .env.*
 !.env.example
-# Add specific sensitive variables (optional)
 VITE_STRIPE_PUBLIC_KEY=pk_test_*
 
+# Build dependencies
 node_modules
 dist
 dist-ssr
