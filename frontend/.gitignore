@@ -9,9 +9,7 @@ lerna-debug.log*
 
 # Environment variables
 .env
-.env.local
-.env.development
-.env.test
+.env.*
 # Add specific sensitive variables (optional)
 VITE_STRIPE_PUBLIC_KEY=pk_test_*
 
