@@ -19,7 +19,13 @@ router.get('/profile', protectRoute, (req, res) => {
   res.json({
     id: req.user.id,
     email: req.user.email,
-    googleTokens: req.user.googleTokens
+    googleTokens: req.user.googleTokens,
+  });
+});
+
+router.get('/sub', protectRoute, (req, res) => {
+  res.json({
+    subscription: req.user.subscription
   });
 });
 

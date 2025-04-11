@@ -34,18 +34,21 @@ const Navbar = () => {
                     </Link>
                   )}
                 </div>
+                
+                {/* The Chat button is only rendered if the user has a subscription */}
+                {authUser.subscription && (
+                  <Link to="/chat" className="btn btn-sm gap-2">
+                    <MessageSquare className="w-4 h-4" />
+                    Chat
+                  </Link>
+                )}
 
-                <Link to="/chat" className="btn btn-sm gap-2">
-                  <MessageSquare className="w-4 h-4" />
-                  Chat
-                </Link>
-
-                <Link to={"/settings"} className="btn btn-sm gap-2">
+                <Link to="/settings" className="btn btn-sm gap-2">
                   <Settings className="w-4 h-4" />
                   Settings
                 </Link>
 
-                <Link to={"/profile"} className={`btn btn-sm gap-2`}>
+                <Link to="/profile" className="btn btn-sm gap-2">
                   <User className="size-5" />
                   Profile
                 </Link>
@@ -62,4 +65,5 @@ const Navbar = () => {
     </header>
   );
 };
+
 export default Navbar;
