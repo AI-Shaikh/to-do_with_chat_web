@@ -8,12 +8,21 @@ import {
   Clock, 
   CheckCircle, 
   CalendarCheck,
-  Loader2 
+  Loader2,
+  Trash2,
+  Save,
+  XCircle
 } from "lucide-react";
 
 const TodoPage = () => {
   const [todos, setTodos] = useState([]);
   const [form, setForm] = useState({
+    title: "",
+    description: "",
+    alarmTime: "",
+  });
+  const [editingTodoId, setEditingTodoId] = useState(null);
+  const [editingForm, setEditingForm] = useState({
     title: "",
     description: "",
     alarmTime: "",
@@ -97,6 +106,49 @@ const TodoPage = () => {
         toast.error("Google Calendar event creation failed");
       }
     }
+  };
+
+  // Update todo
+  const handleUpdate = async (todoId) => {
+    try {
+      const res = await axiosInstance.put(`/todos/${todoId}`, {
+        ...editingForm,
+        alarmTime: editingForm.alarmTime || undefined,
+      });
+      
+      // Update the todo in state
+      setTodos(todos.map(todo => (todo._id === todoId ? res.data : todo)));
+      setEditingTodoId(null);
+      toast.success("Todo updated!");
+    } catch (error) {
+      toast.error(
+        error.response?.data?.message || "Failed to update todo"
+      );
+    }
+  };
+
+  // Delete todo
+  const handleDelete = async (todoId) => {
+    try {
+      await axiosInstance.delete(`/todos/${todoId}`);
+      // Remove the todo from state
+      setTodos(todos.filter((todo) => todo._id !== todoId));
+      toast.success("Todo deleted!");
+    } catch (error) {
+      toast.error(
+        error.response?.data?.message || "Failed to delete todo"
+      );
+    }
+  };
+
+  // Start edit mode by populating edit form with existing todo data
+  const handleEditInit = (todo) => {
+    setEditingTodoId(todo._id);
+    setEditingForm({
+      title: todo.title,
+      description: todo.description,
+      alarmTime: todo.alarmTime ? todo.alarmTime.slice(0, 16) : "", // ISO string handling for input
+    });
   };
 
   // Google connection handler
@@ -236,29 +288,100 @@ const TodoPage = () => {
               key={todo._id} 
               className="border rounded-lg p-4 hover:bg-base-200 transition-colors"
             >
-              <div className="flex items-start gap-3">
-                <div className="mt-1">
-                  <CheckCircle className="size-5 text-primary/70" />
+              {editingTodoId === todo._id ? (
+                // Edit form for the specific todo
+                <div className="space-y-4">
+                  <div className="form-control">
+                    <input
+                      type="text"
+                      className="input input-bordered w-full"
+                      placeholder="Task title"
+                      value={editingForm.title}
+                      onChange={(e) =>
+                        setEditingForm({ ...editingForm, title: e.target.value })
+                      }
+                      required
+                    />
+                  </div>
+                  <div className="form-control">
+                    <textarea
+                      placeholder="Task details"
+                      className="textarea textarea-bordered w-full"
+                      value={editingForm.description}
+                      onChange={(e) =>
+                        setEditingForm({ ...editingForm, description: e.target.value })
+                      }
+                    />
+                  </div>
+                  <div className="form-control">
+                    <input
+                      type="datetime-local"
+                      className="input input-bordered w-full"
+                      value={editingForm.alarmTime}
+                      onChange={(e) =>
+                        setEditingForm({ ...editingForm, alarmTime: e.target.value })
+                      }
+                      min={new Date().toISOString().slice(0, 16)}
+                    />
+                  </div>
+                  <div className="flex gap-2">
+                    <button
+                      onClick={() => handleUpdate(todo._id)}
+                      className="btn btn-success flex-1 gap-2"
+                    >
+                      <Save className="size-4" />
+                      Save
+                    </button>
+                    <button
+                      onClick={() => setEditingTodoId(null)}
+                      className="btn btn-outline flex-1 gap-2"
+                    >
+                      <XCircle className="size-4" />
+                      Cancel
+                    </button>
+                  </div>
                 </div>
-                <div className="flex-1">
-                  <h3 className="font-semibold">{todo.title}</h3>
-                  {todo.description && (
-                    <p className="text-base-content/80 mt-1">{todo.description}</p>
-                  )}
-                  {todo.alarmTime && (
-                    <p className="text-sm text-base-content/60 mt-2 flex items-center gap-1">
-                      <Clock className="size-4" />
-                      {new Date(todo.alarmTime).toLocaleString()}
-                      {/* Google Calendar Status Indicator */}
-                      {todo.googleEventId && (
-                        <span className="text-xs text-success ml-2">
-                          (Added to Google Calendar)
-                        </span>
-                      )}
-                    </p>
-                  )}
+              ) : (
+                // Display mode for todo
+                <div className="flex items-start gap-3">
+                  <div className="mt-1">
+                    <CheckCircle className="size-5 text-primary/70" />
+                  </div>
+                  <div className="flex-1">
+                    <h3 className="font-semibold">{todo.title}</h3>
+                    {todo.description && (
+                      <p className="text-base-content/80 mt-1">{todo.description}</p>
+                    )}
+                    {todo.alarmTime && (
+                      <p className="text-sm text-base-content/60 mt-2 flex items-center gap-1">
+                        <Clock className="size-4" />
+                        {new Date(todo.alarmTime).toLocaleString()}
+                        {todo.googleEventId && (
+                          <span className="text-xs text-success ml-2">
+                            (Added to Google Calendar)
+                          </span>
+                        )}
+                      </p>
+                    )}
+                  </div>
+                  <div className="flex flex-col gap-2">
+                    <button
+                      onClick={() => handleEditInit(todo)}
+                      className="btn btn-xs flex gap-1"
+                    >
+                      <Edit className="size-4" />
+                      Edit
+                    </button>
+                    <button
+                      onClick={() => handleDelete(todo._id)}
+                      className="btn btn-xs flex gap-1"
+                    >
+                      <Trash2 className="size-4" />
+                      Delete
+                    </button>
+                  </div>
                 </div>
-              </div>
+              )}
             </div>
           ))}
         </div>
