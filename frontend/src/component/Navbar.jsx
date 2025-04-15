@@ -1,6 +1,6 @@
 import { Link } from "react-router-dom";
 import { useAuthStore } from "../store/useAuthStore";
-import { LogOut, MessageSquare, Settings, User, CheckCircle, AlertCircle } from "lucide-react";
+import { LogOut, MessageSquare, Settings, User } from "lucide-react";
 
 const Navbar = () => {
   const { logout, authUser } = useAuthStore();
@@ -21,27 +21,14 @@ const Navbar = () => {
           <div className="flex items-center gap-2">
             {authUser && (
               <>
-                <div className="flex items-center gap-2 text-sm">
-                  {authUser.subscription ? (
-                    <span className="text-green-500 flex items-center gap-1">
-                      <CheckCircle className="w-4 h-4" />
-                      Pro Member
-                    </span>
-                  ) : (
-                    <Link to="/subscription" className="btn btn-sm btn-warning gap-2">
-                      <AlertCircle className="w-4 h-4" />
-                      Upgrade to Pro
-                    </Link>
-                  )}
-                </div>
                 
-                {/* The Chat button is only rendered if the user has a subscription */}
-                {authUser.subscription && (
+                {/* The Chat button is rendered  */}
+                
                   <Link to="/chat" className="btn btn-sm gap-2">
                     <MessageSquare className="w-4 h-4" />
                     Chat
                   </Link>
-                )}
+                
 
                 <Link to="/settings" className="btn btn-sm gap-2">
                   <Settings className="w-4 h-4" />

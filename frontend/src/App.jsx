@@ -6,7 +6,7 @@ import ProfilePage from "./pages/ProfilePage";
 import SettingPage from "./pages/SettingPage";
 import SignUpPage from "./pages/SignUpPage";
 import TodoPage from "./pages/TodoPage";
-import SubscriptionPage from "./pages/SubscriptionPage";
+
 
 import { Routes,Route,Navigate } from "react-router-dom";
 import { useAuthStore } from "./store/useAuthStore";
@@ -44,7 +44,6 @@ const App = () => {
           <Route path="/login" element={!authUser ? <LoginPage /> : <Navigate to="/" />} />
           <Route path="/todo" element={authUser ? <TodoPage /> : <Navigate to="/login" />} />
           <Route path="/chat" element={authUser ? <HomePage /> : <Navigate to="/login" />} />
-          <Route path="/subscription" element={authUser ? <SubscriptionPage /> : <Navigate to="/login" />} />
           <Route path="/settings" element={<SettingPage />} />
           <Route path="/profile" element={authUser ? <ProfilePage /> : <Navigate to="/login" />} />
         </Routes>

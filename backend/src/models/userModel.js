@@ -20,10 +20,6 @@ const userSchema = new mongoose.Schema(
       type: String,
       default: "",
     },
-    subscription: { 
-      type: Boolean, 
-      default: false 
-    },
     googleTokens: {
       access_token: String,
       refresh_token: String,

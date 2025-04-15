@@ -1,14 +1,13 @@
 import express from "express";
 import { protectRoute } from "../middleware/auth.middleware.js"; 
 import { getMessages, sendMessage, getUsersForSidebar } from "../controllers/chatController.js";
-import subscriptionMiddleware from '../middleware/subs.middleware.js';
 
 const router =express.Router();
 
-router.get("/user", protectRoute,subscriptionMiddleware, getUsersForSidebar);
+router.get("/user", protectRoute, getUsersForSidebar);
 
-router.get("/:id",protectRoute,subscriptionMiddleware, getMessages);
+router.get("/:id",protectRoute, getMessages);
 
-router.post("/send/:id",protectRoute,subscriptionMiddleware, sendMessage);
+router.post("/send/:id",protectRoute, sendMessage);
 
 export default router;
