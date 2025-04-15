@@ -16,6 +16,10 @@ export const signup = async (req, res) => {
       return res.status(400).json({ message: "Password must be at least 6 characters" });
     }
 
+    if (fullName.length > 25) {
+      return res.status(400).json({ message: "full name should be less than 25 characters" });
+    }
+
     // Validate email format using a simple regex
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!emailRegex.test(email)) {
