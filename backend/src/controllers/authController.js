@@ -3,53 +3,68 @@ import User from "../models/userModel.js"
 import bcrypt from "bcryptjs"
 import cloudinary from "../lib/cloudinary.js"
 
-export const signup = async (req,res) => {
-  const {fullName,email,password}=req.body;
-  try{
-    //conditions
-    if( !fullName || !email || !password){
-      return res.status(400).json({ message: "All fields are required"});
+export const signup = async (req, res) => {
+  const { fullName, email, password } = req.body;
+  try {
+    // Check required fields
+    if (!fullName || !email || !password) {
+      return res.status(400).json({ message: "All fields are required" });
     }
 
-    if(password.length < 6){
-      return res.status(400).json({message: "Password must be atleast 6 characters"});
+    // Check password length
+    if (password.length < 6) {
+      return res.status(400).json({ message: "Password must be at least 6 characters" });
     }
 
-    const user = await User.findOne({email})
+    // Validate email format using a simple regex
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(email)) {
+      return res.status(400).json({ message: "Invalid email format" });
+    }
 
-    if(user) return res.status(400).json({message : "Email already exists"});
+    // Validate fullName contains only alphabets (and spaces)
+    const nameRegex = /^[A-Za-z\s]+$/;
+    if (!nameRegex.test(fullName)) {
+      return res.status(400).json({ message: "Full name should contain only alphabetic characters" });
+    }
 
-    //hashed password
+    // Check if email already exists
+    const user = await User.findOne({ email });
+    if (user) {
+      return res.status(400).json({ message: "Email already exists" });
+    }
+
+    // Hash the password
     const salt = await bcrypt.genSalt(10);
-    const hashedPassword = await bcrypt.hash(password,salt);
+    const hashedPassword = await bcrypt.hash(password, salt);
 
+    // Create new user with hashed password
     const newUser = new User({
       fullName,
       email,
-      password : hashedPassword      
-    })
+      password: hashedPassword,
+    });
 
-    //generating jwt token here
-    if(newUser){
-      generateToken(newUser._id,res)
+    // Generate JWT token and save the new user
+    if (newUser) {
+      generateToken(newUser._id, res);
       await newUser.save();
 
       res.status(201).json({
-        _id:newUser._id,
-        fullName:newUser.fullName,
+        _id: newUser._id,
+        fullName: newUser.fullName,
         email: newUser.email,
         profilePic: newUser.profilePic,
-       
-      })
-    }else{
-      res.status(400).json({ message: "Invalid user data"});
+      });
+    } else {
+      res.status(400).json({ message: "Invalid user data" });
     }
-
-  }catch(error){
-    console.log("Error in signup controller",error.message);
+  } catch (error) {
+    console.log("Error in signup controller", error.message);
     res.status(500).json({ message: "Internal Server Error" });
   }
 };
+
 
 export const login = async (req,res) => {
     const { email, password } =req.body
